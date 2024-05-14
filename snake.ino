@@ -1,17 +1,18 @@
 #include <Gamebuino-Meta.h>
 
-const int GRID_SIZE = 8;
-const int CELL_SIZE = 10;
+const int GRID_SIZE = 6;
+const int CELL_SIZE = 8;
 enum GameState {
     MENU,
     GAME,
     GAME_OVER
 };
+const int SNAKE_SPEED = 5;
 int foodX, foodY;
 int snakeX[256], snakeY[256];
 int snakeLength = 3;
 int direction = 1; // 0: haut, 1: droite, 2: bas, 3: gauche
-bool gameOver = false;
+int score = 0;
 GameState gameState;
 
 void setup() {
@@ -27,13 +28,15 @@ void loop() {
       handleMenuInput();
       break;
     case GAME:
-      drawGrid();
       handleInput();
-      moveSnake();
-      checkFoodCollision();
+      drawGrid();
+      if (gb.frameCount % SNAKE_SPEED == 0) {
+          moveSnake();
+          checkFoodCollision();
+      }
       drawSnake();
       drawFood();
-      delay(100);
+      displayScore();
       break;
     case GAME_OVER:
       displayGameOver();
@@ -74,7 +77,7 @@ void drawGrid() {
   gb.display.fillRect(0, 0, GRID_SIZE * CELL_SIZE, GRID_SIZE * CELL_SIZE);
 
   gb.display.setColor(BLACK);
-  for (int i = 0; i <= GRID_SIZE; i++) {
+  for (int i = 0; i < GRID_SIZE; i++) {
     gb.display.drawLine(i * CELL_SIZE, 0, i * CELL_SIZE, GRID_SIZE * CELL_SIZE);
     gb.display.drawLine(0, i * CELL_SIZE, GRID_SIZE * CELL_SIZE, i * CELL_SIZE);
   }
@@ -116,7 +119,7 @@ void drawFood() {
 }
 
 void moveSnake() {
-   int nextX = snakeX[0];
+  int nextX = snakeX[0];
   int nextY = snakeY[0];
   switch (direction) {
     case 0: nextY--; break;
@@ -127,10 +130,17 @@ void moveSnake() {
 
   // Check for wall collisions
   if (nextX < 0 || nextY < 0 || nextX >= GRID_SIZE || nextY >= GRID_SIZE) {
-    gameOver = true;
     gameState = GAME_OVER;
     return;
   }
+
+  // check for snake tail collision
+  for (int i = 1; i < snakeLength; i++) {
+        if (snakeX[i] == nextX && snakeY[i] == nextY) {
+            gameState = GAME_OVER;
+            return;
+        }
+    }
 
   for (int i = snakeLength - 1; i > 0; i--) {
     snakeX[i] = snakeX[i - 1];
@@ -151,6 +161,7 @@ void checkFoodCollision() {
   if (snakeX[0] == foodX && snakeY[0] == foodY) {
     snakeLength++;
     placeFood();
+    score++;
   }
 }
 void displayGameOver() {
@@ -160,18 +171,28 @@ void displayGameOver() {
   gb.display.print("GAME OVER");
   gb.display.setCursor(20, 30);
   gb.display.print("Score: ");
-  gb.display.print(snakeLength - 3);
+  gb.display.print(score);
   gb.display.setCursor(20, 40);
   gb.display.print("A: Restart");
   gb.display.setCursor(20, 50);
   gb.display.print("B: Menu");
 }
 
+void displayScore() {
+  gb.display.setColor(WHITE);
+  gb.display.setCursor(55, 5);
+  gb.display.print("Score: ");
+  gb.display.setCursor(65, 15);
+  gb.display.print(score);
+}
+
 void handleGameOverInput() {
   if (gb.buttons.pressed(BUTTON_A)) {
     resetGame();
     gameState = GAME;
+      score = 0;
   } else if (gb.buttons.pressed(BUTTON_B)) {
     gameState = MENU;
+      score = 0;
   }
 }
