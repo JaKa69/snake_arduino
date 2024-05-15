@@ -114,9 +114,9 @@ void resetGame() {
 void drawMenu() {
   gb.display.clear();
   gb.display.setColor(WHITE);
-  gb.display.setCursor(15, 20);
+  gb.display.setCursor(15, 10);
   gb.display.print("Snake Game");
-  gb.display.setCursor(15, 30);
+  gb.display.setCursor(15, 20);
   gb.display.print("Press A to Start");
   gb.display.setCursor(15, 40);
   gb.display.print("last best score: ");
@@ -229,17 +229,17 @@ void checkFoodCollision() {
 void displayGameOver() {
   gb.display.clear();
   gb.display.setColor(WHITE);
-  gb.display.setCursor(20, 20);
+  gb.display.setCursor(20, 10);
   gb.display.print("GAME OVER");
-  gb.display.setCursor(20, 30);
+  gb.display.setCursor(20, 20);
   gb.display.print("Score: ");
   gb.display.print(score);
-  gb.display.setCursor(20, 40);
+  gb.display.setCursor(20, 30);
   gb.display.print("Best Score: ");
   gb.display.print(bestScore);
-  gb.display.setCursor(20, 50);
+  gb.display.setCursor(20, 40);
   gb.display.print("A: Restart");
-  gb.display.setCursor(20, 60);
+  gb.display.setCursor(20, 50);
   gb.display.print("B: Menu");
 }
 
