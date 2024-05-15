@@ -1,6 +1,6 @@
 #include <Gamebuino-Meta.h>
 
-const int GRID_SIZE = 6;
+const int GRID_SIZE = 8;
 const int CELL_SIZE = 8;
 enum GameState {
     MENU,
@@ -67,6 +67,7 @@ Image snakeBodyImg(snakeBodyData);
 
 int direction = 1; // 0: haut, 1: droite, 2: bas, 3: gauche
 int score = 0;
+int bestScore = 0;
 GameState gameState;
 
 void setup() {
@@ -93,6 +94,7 @@ void loop() {
       displayScore();
       break;
     case GAME_OVER:
+      bestScore = (score > bestScore) ? score : bestScore;
       displayGameOver();
       handleGameOverInput();
       break;
@@ -112,10 +114,14 @@ void resetGame() {
 void drawMenu() {
   gb.display.clear();
   gb.display.setColor(WHITE);
-  gb.display.setCursor(20, 20);
+  gb.display.setCursor(15, 20);
   gb.display.print("Snake Game");
-  gb.display.setCursor(20, 30);
+  gb.display.setCursor(15, 30);
   gb.display.print("Press A to Start");
+  gb.display.setCursor(15, 40);
+  gb.display.print("last best score: ");
+  gb.display.setCursor(39.5, 50);
+  gb.display.print(bestScore);
 }
 
 void handleMenuInput() {
@@ -229,8 +235,11 @@ void displayGameOver() {
   gb.display.print("Score: ");
   gb.display.print(score);
   gb.display.setCursor(20, 40);
-  gb.display.print("A: Restart");
+  gb.display.print("Best Score: ");
+  gb.display.print(bestScore);
   gb.display.setCursor(20, 50);
+  gb.display.print("A: Restart");
+  gb.display.setCursor(20, 60);
   gb.display.print("B: Menu");
 }
 
